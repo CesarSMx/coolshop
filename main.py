@@ -1,20 +1,31 @@
 import sys
+import csv
+import os
+ #add "changes in readme.md file" at next commit
+CLIENT_TABLE = '.clients.csv'
+CLIENT_SCHEMA = ['first_name', 'last_name', 'email', 'phone_number']
 
-clients = [
-    {
-        "first_name": "Jose",
-        "last_name": "Rosado",
-        "email": "joser@email.com",
-        "phone_number":"9954124595"
-    },
-    {
-        "first_name": "Ricardo",
-        "last_name": "Sanchez",
-        "email": "ricardos@email.com",
-        "phone_number":"9992657812"
-    }
-]
+clients = []
 
+def _initialize_clients_from_storage():
+    # Opening .clients.csv file in reading mode and copying its actual
+    # content to clients list variable.
+    with open(CLIENT_TABLE, 'r') as f:
+        reader = csv.DictReader(f, fieldnames=CLIENT_SCHEMA)
+        for row in reader:
+            clients.append(row)
+
+
+def _save_clients_to_storage():
+    # a temporary file is created with {}.temp
+    tem_table_name = '{}.tmp'.format(CLIENT_TABLE)
+    # save the changes made on clients list
+    with open(tem_table_name, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=CLIENT_SCHEMA)
+        writer.writerows(clients)
+        # clients.csv is replaced with the temporary file.
+        os.remove(CLIENT_TABLE)
+        os.rename(tem_table_name, CLIENT_TABLE)
 
 def create_client(client):
     global clients
@@ -27,6 +38,9 @@ def create_client(client):
 
 def list_clients():
     global clients
+    print("uid  |  first name   |   last_name  |  email  |  phone number")
+    print("***********************************************************")
+    # clients list is readed and content is printed row by row.
     for idx, client in enumerate(clients):
         print(f"{idx} | {client['first_name']} | {client['last_name']} | {client['email']} | {client['phone_number']}")
 
@@ -111,6 +125,7 @@ def _get_new_client_data():
 
 
 if __name__ == '__main__':
+    _initialize_clients_from_storage()
     _print_welcome_message()
     
     command = input().lower()
@@ -118,17 +133,14 @@ if __name__ == '__main__':
     if command == 'c':
         client = _get_new_client_data()
         create_client(client)
-        list_clients()
     elif command == 'l':
         list_clients()
     elif command == 'd':
         client_name = _get_client_name()
         delete_client(client_name)
-        list_clients()
     elif command == 'u':
         client_name = _get_client_name()
         update_client(client_name)
-        list_clients()
     elif command == 's':
         client_name = _get_client_name()
         found = search_client(client_name)
@@ -138,3 +150,5 @@ if __name__ == '__main__':
             print(f'Client {client_name} was not found')
     else:
         print('Invalid command')
+    
+    _save_clients_to_storage()
