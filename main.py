@@ -1,7 +1,6 @@
 import sys
 import csv
 import os
- #add "changes in readme.md file" at next commit
 CLIENT_TABLE = '.clients.csv'
 CLIENT_SCHEMA = ['first_name', 'last_name', 'email', 'phone_number']
 
