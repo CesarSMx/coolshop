@@ -1,2 +1,8 @@
+__pycache__
+#Virtual enviroment files.
 /venv
+
 .clients.csv
+
+#setuptools command files
+coolshop/cs.egg-*
